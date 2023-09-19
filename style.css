@@ -1,0 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.gameBoard {
+    height: 510px;
+    width: 510px;
+    border: 2px solid black;
+    margin: auto;
+    margin-top: 8vh;
+}
+
+.snake {
+    height: 15px;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+}
+.head {
+    height: 15px;
+    width: 15px;
+    background-color: lightseagreen;
+    position: relative;
+    border: 0.5px solid black;
+    box-sizing: border-box;
+}
+
+.apple {
+    height: 15px;
+    width: 15px;
+    background-color: red;
+    border: 0.5px solid black;
+    box-sizing: border-box;
+}
