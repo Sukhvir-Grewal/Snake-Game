@@ -4,6 +4,8 @@ var apple = document.querySelector(".apple");
 var gameBoard = document.querySelector(".gameBoard");
 
 var running;
+var collisions = 15;
+var currentKey = 0;
 
 var movingOnX = 0;
 var movingOnY = 0;
@@ -37,73 +39,92 @@ function getPositionForApple() {
 
 function increaseSize() {
     var newTail = document.createElement("div");
+    var existingHead = document.querySelector(".head");
+
     newTail.classList.add("head");
+    newTail.setAttribute("key", currentKey + 1);
 
-    // Get a reference to the existing "head" element
-    var existingHead = document.querySelector(".snake .head");
-
-    // Insert the newTail before the existingHead
     existingHead.parentNode.insertBefore(newTail, existingHead);
-    snake.style.width += 15;
-    
+
+    newTail.style.left = `${movingOnX - 15}px`;
+    newTail.style.top = `${movingOnY}px`;
+
+    // Pushing all to back
+    head.forEach((head) => {
+        head.style.left = `${movingOnX - 15}px`;
+    });
+
+    head = document.querySelectorAll(".head");
+
+    snake.style.width += 30;
+    currentKey++;
 }
 
 function checkOverlapping() {
-    if (applePositionX === (movingOnX + 30) && applePositionY === movingOnY - 15) {
+    if (
+        applePositionX === movingOnX + (collisions - 15) &&
+        applePositionY === movingOnY - 15
+    ) {
         getPositionForApple();
-        // increaseSize();
+        increaseSize();
+        head.forEach((head) => {
+            console.log(
+                `Key: ${head.getAttribute("key")}`,
+                `Left: ${parseInt(head.style.left)}`,
+                `Top: ${parseInt(head.style.top)}`
+            );
+        });
+        collisions += 15;
     }
 }
 
 getPositionForApple();
 
-setInterval(() => {
-    checkOverlapping();
-}, 200);
 
 window.addEventListener("keydown", (e) => {
-    head = document.querySelectorAll(".head");  
     if (e.key === "ArrowRight") {
         clearInterval(running);
         running = setInterval(() => {
             movingOnX += 15;
-            head.forEach((head) => {
-                head.style.left = `${movingOnX}px`;
+            head.forEach((part) => {
+                part.style.left = `${movingOnX}px`;
             });
-
             if (movingOnX >= 495) clearInterval(running);
+            checkOverlapping();
         }, 200);
     } else if (e.key === "ArrowLeft") {
         clearInterval(running);
         running = setInterval(() => {
             movingOnX -= 15;
-            head.forEach((head) => {
-                head.style.left = `${movingOnX}px`;
+            head.forEach((part) => {
+                var currentLeft = parseInt(part.style.left || 0, 10);
+                part.style.left = `${currentLeft - 15}px`;
             });
-
             if (movingOnX <= 0) clearInterval(running);
+            checkOverlapping();
         }, 200);
     } else if (e.key === "ArrowDown") {
-        // clearInterval(running);
-        movingOnY += 15;
-        head[2].style.top = `${movingOnY}px`;
-        head[2].style.left = `${movingOnX - 15}px`;
-        // head.forEach((head) => {
-        //     head.style.top = `${movingOnY}px`;
-        // });
-        // running = setInterval(() => {
+        clearInterval(running);
+        running = setInterval(() => {
+            head.forEach((part) => {
+                var currentTop = parseInt(part.style.top || 0, 10);
+                part.style.top = `${currentTop + 15}px`;
+            });
+            movingOnY += 15;
+            checkOverlapping();
 
-        //     if (movingOnY >= 495) clearInterval(running);
-        // }, 200);
+            if (movingOnY >= 495) clearInterval(running);
+        }, 200);
     } else if (e.key === "ArrowUp") {
         clearInterval(running);
         running = setInterval(() => {
             movingOnY -= 15;
-            head.forEach((head) => {
-                head.style.top = `${movingOnY}px`;
+            head.forEach((part) => {
+                var currentTop = parseInt(part.style.top || 0, 10);
+                part.style.top = `${currentTop - 15}px`;
             });
-
             if (movingOnY <= 0) clearInterval(running);
+            checkOverlapping();
         }, 200);
     }
 });
